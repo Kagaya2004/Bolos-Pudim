@@ -435,7 +435,7 @@
         <!-- Campo dinâmico de troco -->
         <div id="div_troco" class="hidden">
             <label>Troco para quanto? (Deixe vazio se não precisar):
-                <input type="number" name="troco_para" step="0.01" placeholder="Ex: 100.00">
+                <input type="text" name="troco_para" placeholder="Ex: 100,00" inputmode="decimal" oninput="this.value = this.value.replace(/[^0-9.,]/g, '')">
             </label>
         </div>
 
