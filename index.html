@@ -563,9 +563,9 @@
         }
 
         // 5. Montagem da Mensagem e Envio para a Serverless Function
-        let mensagem = `Olá, meu nome é ${nomeCliente}! Gostaria de fazer uma encomenda.\n\n`;
-        mensagem += `*Data e Horário:* ${dataFormatada}\n\n`;
+        let mensagem = `Olá, meu nome é ${nomeCliente}! Gostaria de fazer uma encomenda.\n`;
         mensagem += `*MEUS PEDIDOS:*\n${listaProdutos}\n`;
+        mensagem += `*Data e Horário:* ${dataFormatada}\n`;
         mensagem += `*RECEBIMENTO:* ${recebimentoTexto}\n`;
         if (enderecoTexto) mensagem += `${enderecoTexto}`;
         mensagem += `*PAGAMENTO:* ${formaPagamentoTexto}\n`;
