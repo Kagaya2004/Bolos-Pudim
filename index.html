@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Autoatendimento - Bolos & Pudim</title>
+    
+    <!-- Ícone do Navegador (Favicon em WebP) -->
+    <link rel="icon" type="image/webp" href="imagens/Café-da-Kátia.webp">
+
+    <style>
+        /* Paleta de Cores extraída da Logo */
+        :root {
+            --cor-fundo-escuro: #360f0f;
+            --cor-fundo-card: #4a1515;
+            --cor-dourado: #e2a938;
+            --cor-dourado-hover: #c48e2b;
+            --cor-vermelho: #a31d1d;
+            --cor-texto-claro: #fcf4e8;
+            --cor-wpp: #25D366;
+            --cor-chocolate-derretido: #240808;
+        }
+
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background-color: var(--cor-fundo-escuro);
+            color: var(--cor-texto-claro);
+            margin: 0; 
+            padding: 40px 20px;
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        /* EFEITO DE COBERTURA DE CHOCOLATE NO TOPO E BASE (Bordas) */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 35px;
+            background: url('data:image/svg+xml;utf8,<svg viewBox="0 0 100 20" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"><path d="M0,0 L100,0 L100,5 Q90,20 80,5 Q70,15 60,5 Q50,20 40,5 Q30,12 20,5 Q10,18 0,5 Z" fill="%23240808"/></svg>') no-repeat top;
+            background-size: 100% 100%;
+            z-index: 100;
+            pointer-events: none;
+        }
+
+        body::after {
+            content: "";
+            position: fixed;
+            bottom: 0; left: 0; width: 100%; height: 35px;
+            background: url('data:image/svg+xml;utf8,<svg viewBox="0 0 100 20" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"><path d="M0,20 L100,20 L100,15 Q90,0 80,15 Q70,5 60,15 Q50,0 40,15 Q30,8 20,15 Q10,2 0,15 Z" fill="%23240808"/></svg>') no-repeat bottom;
+            background-size: 100% 100%;
+            z-index: 100;
+            pointer-events: none;
+        }
+
+        .container {
+            background-color: var(--cor-fundo-card);
+            max-width: 500px;
+            width: 100%;
+            padding: 25px;
+            border-radius: 15px;
+            border: 2px solid var(--cor-dourado);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.6);
+            z-index: 10;
+        }
+
+        /* Estilização da Logo no Topo */
+        .logo-container {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .logo-container img {
+            width: 150px;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 50%;
+            border: 3px solid var(--cor-dourado);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+        }
+
+        h2, h3, h4, legend {
+            color: var(--cor-dourado);
+            text-align: center;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+            margin-top: 0;
+        }
+
+        .hidden { display: none !important; }
+
+        fieldset { 
+            margin-bottom: 20px; 
+            border: 1px solid var(--cor-dourado); 
+            border-radius: 10px;
+            padding: 15px;
+            background-color: rgba(0, 0, 0, 0.15);
+        }
+
+        /* Filtros de Categoria */
+        .filtros-container {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .btn-filtro {
+            background-color: transparent;
+            color: var(--cor-dourado);
+            border: 1px solid var(--cor-dourado);
+            padding: 8px 16px;
+            border-radius: 20px;
+            width: auto;
+            font-size: 14px;
+            margin-bottom: 0;
+            font-weight: normal;
+        }
+
+        .btn-filtro.ativo {
+            background-color: var(--cor-dourado);
+            color: var(--cor-fundo-escuro);
+            font-weight: bold;
+        }
+
+        .categoria-titulo {
+            text-align: left;
+            border-bottom: 1px solid rgba(226, 169, 56, 0.3);
+            padding-bottom: 5px;
+            margin-bottom: 15px;
+            margin-top: 15px;
+            font-size: 18px;
+            color: var(--cor-texto-claro);
+        }
+        
+        .categoria-grupo:first-child .categoria-titulo {
+            margin-top: 0;
+        }
+
+        /* Estilização de Botões base */
+        button { 
+            padding: 12px 15px; 
+            background: var(--cor-dourado); 
+            color: var(--cor-fundo-escuro); 
+            font-weight: bold;
+            font-size: 16px;
+            border: none; 
+            border-radius: 8px;
+            cursor: pointer; 
+            width: 100%;
+            transition: background 0.3s;
+        }
+        button:hover { background: var(--cor-dourado-hover); }
+        
+        button.btn-wpp {
+            background: var(--cor-wpp);
+            color: white;
+            font-size: 18px;
+            margin-top: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        button.btn-wpp:hover { background: #1ebe5a; }
+
+        button.btn-wpp svg {
+            width: 22px;
+            height: 22px;
+            fill: currentColor;
+        }
+
+        /* Inputs e Formulários */
+        label { display: block; margin-bottom: 5px; font-weight: 500; }
+        
+        input[type="text"], input[type="number"], input[type="datetime-local"], select, textarea {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid var(--cor-dourado);
+            border-radius: 6px;
+            background-color: #360f0f;
+            color: #ffffff;
+            box-sizing: border-box;
+            font-family: inherit;
+        }
+
+        ::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+        
+        ::-webkit-calendar-picker-indicator {
+            filter: invert(1);
+            cursor: pointer;
+        }
+
+        /* Layout dos Produtos */
+        .produto-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background-color: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(226, 169, 56, 0.3);
+            border-radius: 8px;
+            padding: 10px;
+            margin-bottom: 12px;
+        }
+
+        .produto-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            margin-bottom: 0;
+            width: 75%;
+        }
+
+        .produto-info img {
+            width: 55px;
+            height: 55px;
+            object-fit: cover;
+            border-radius: 8px;
+            border: 1px solid var(--cor-dourado);
+        }
+
+        .produto-info span {
+            font-size: 14px;
+            line-height: 1.2;
+        }
+
+        .quantidade-input {
+            width: 60px !important;
+            margin-bottom: 0 !important;
+            text-align: center;
+            padding: 8px !important;
+        }
+
+        .total-box {
+            background-color: var(--cor-vermelho);
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            margin-bottom: 15px;
+            border: 1px solid var(--cor-dourado);
+        }
+        .total-box h4 { margin: 0; color: #fff; font-size: 20px;}
+
+        /* Controles de Quantidade (+ e -) */
+        .controle-quantidade {
+            display: flex;
+            align-items: center;
+            background-color: var(--cor-fundo-escuro);
+            border: 1px solid var(--cor-dourado);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .btn-qtd {
+            background-color: transparent;
+            color: var(--cor-dourado);
+            border: none;
+            width: 30px;
+            height: 30px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+            border-radius: 0;
+        }
+
+        .btn-qtd:hover {
+            background-color: rgba(226, 169, 56, 0.2);
+        }
+
+        .quantidade-visor {
+            width: 30px;
+            text-align: center;
+            font-size: 16px;
+            font-weight: bold;
+            color: var(--cor-texto-claro);
+            border: none;
+            background: transparent;
+            padding: 0;
+            margin: 0;
+            pointer-events: none; /* Impede a digitação manual para evitar erros */
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    
+    <!-- LOGO NO TOPO -->
+    <div class="logo-container">
+        <img src="imagens/Café-da-Kátia.webp" alt="Logo Bolos & Pudim">
+        <h2>Bolos & Pudim</h2>
+    </div>
+
+    <!-- FORMULÁRIO PRINCIPAL E CARDÁPIO -->
+    <form id="formulario-pedido" onsubmit="validarFormulario(event)">
+        
+        <label>Nome Completo:
+            <input type="text" name="nome_cliente" placeholder="Digite seu nome..." required>
+        </label>
+
+        <fieldset>
+            <legend>Cardápio de Produtos</legend>
+
+            <!-- Filtros -->
+            <div class="filtros-container">
+                <button type="button" class="btn-filtro ativo" onclick="filtrarCategoria('todos', this)">Todos</button>
+                <button type="button" class="btn-filtro" onclick="filtrarCategoria('simples', this)">Simples</button>
+                <button type="button" class="btn-filtro" onclick="filtrarCategoria('vulcao', this)">Vulcão</button>
+                <button type="button" class="btn-filtro" onclick="filtrarCategoria('pudins', this)">Pudins</button>
+            </div>
+            
+            <!-- Categoria: Simples -->
+            <div class="categoria-grupo" data-categoria="simples">
+                <h4 class="categoria-titulo">Bolos Simples</h4>
+                <div class="produto-item">
+                    <div class="produto-info">
+                        <img src="imagens/Bolo-de-Cenoura-com-Cobertura-de-Brigadeiro.webp" alt="Bolo de Cenoura">
+                        <span>Bolo de Cenoura c/ Brigadeiro<br><b>R$ 40,00</b></span>
+                    </div>
+                    <div class="controle-quantidade">
+                        <button type="button" class="btn-qtd" onclick="alterarQuantidade(this, -1)">-</button>
+                        <input type="text" class="quantidade-visor produto-qtd" name="quantidade[]" data-nome="Bolo de Cenoura com Cobertura de Brigadeiro" data-preco="40" value="0" readonly>
+                        <button type="button" class="btn-qtd" onclick="alterarQuantidade(this, 1)">+</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Categoria: Vulcão -->
+            <div class="categoria-grupo" data-categoria="vulcao">
+                <h4 class="categoria-titulo">Bolos Vulcão</h4>
+                <div class="produto-item">
+                    <div class="produto-info">
+                        <img src="imagens/Vulcao-de-Choconinho.webp" alt="Vulcão de Choconinho">
+                        <span>Vulcão de Choconinho<br><b>R$ 50,00</b></span>
+                    </div>
+                    <div class="controle-quantidade">
+                        <button type="button" class="btn-qtd" onclick="alterarQuantidade(this, -1)">-</button>
+                        <input type="text" class="quantidade-visor produto-qtd" name="quantidade[]" data-nome="Vulcão de Choconinho" data-preco="50" value="0" readonly>
+                        <button type="button" class="btn-qtd" onclick="alterarQuantidade(this, 1)">+</button>
+                    </div>
+                </div>
+
+                <div class="produto-item">
+                    <div class="produto-info">
+                        <img src="imagens/Vulcao-de-Ninho.webp" alt="Vulcão de Ninho">
+                        <span>Vulcão de Ninho<br><b>R$ 50,00</b></span>
+                    </div>
+                    <div class="controle-quantidade">
+                        <button type="button" class="btn-qtd" onclick="alterarQuantidade(this, -1)">-</button>
+                        <input type="text" class="quantidade-visor produto-qtd" name="quantidade[]" data-nome="Vulcão de Ninho" data-preco="50" value="0" readonly>
+                        <button type="button" class="btn-qtd" onclick="alterarQuantidade(this, 1)">+</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Categoria: Pudins -->
+            <div class="categoria-grupo" data-categoria="pudins">
+                <h4 class="categoria-titulo">Pudins</h4>
+                <div class="produto-item">
+                    <div class="produto-info">
+                        <img src="imagens/Pudim-de-Leite-Condensado.webp" alt="Pudim de Leite Condensado">
+                        <span>Pudim de Leite Condensado<br><b>R$ 35,00</b></span>
+                    </div>
+                    <div class="controle-quantidade">
+                        <button type="button" class="btn-qtd" onclick="alterarQuantidade(this, -1)">-</button>
+                        <input type="text" class="quantidade-visor produto-qtd" name="quantidade[]" data-nome="Pudim de Leite Condensado" data-preco="35" value="0" readonly>
+                        <button type="button" class="btn-qtd" onclick="alterarQuantidade(this, 1)">+</button>
+                    </div>
+                </div>
+            </div>
+        </fieldset>
+
+        <label>Data e Horário de Entrega/Retirada:
+            <input type="datetime-local" name="data_hora_entrega" required>
+        </label>
+
+        <fieldset>
+            <legend>Método de Recebimento</legend>
+            <label>
+                <input type="radio" name="metodo_recebimento" value="retirada" onchange="toggleEndereco()" required> Retirada no Local
+            </label>
+            <label style="margin-top: 8px;">
+                <input type="radio" name="metodo_recebimento" value="delivery" onchange="toggleEndereco()"> Delivery (+ R$ 7,00)
+            </label>
+        </fieldset>
+
+        <!-- Campo dinâmico de endereço -->
+        <div id="div_endereco" class="hidden">
+            <label>CEP:
+                <input type="text" id="cep" name="cep" placeholder="Apenas números (Ex: 01001000)" maxlength="9" onblur="buscarCEP(this.value)">
+            </label>
+            
+            <label>Rua/Endereço:
+                <input type="text" id="rua" name="rua" placeholder="Nome da rua">
+            </label>
+            
+            <div style="display: flex; gap: 10px;">
+                <div style="flex: 1;">
+                    <label>Número:
+                        <input type="text" id="numero" name="numero" placeholder="Nº">
+                    </label>
+                </div>
+                <div style="flex: 2;">
+                    <label>Bairro:
+                        <input type="text" id="bairro" name="bairro" placeholder="Bairro">
+                    </label>
+                </div>
+            </div>
+
+            <label>Complemento (Opcional):
+                <input type="text" id="complemento" name="complemento" placeholder="Ex: Apto 45, Bloco B">
+            </label>
+            
+            <label>Observações (Opcional):
+                <textarea id="observacoes" name="observacoes" rows="2" placeholder="Ponto de referência, portão azul..."></textarea>
+            </label>
+        </div>
+
+        <label>Forma de Pagamento:
+            <select name="forma_pagamento" onchange="toggleTroco()" required>
+                <option value="">Selecione...</option>
+                <option value="pix">Pix</option>
+                <option value="cartao">Cartão na Entrega</option>
+                <option value="dinheiro">Dinheiro</option>
+            </select>
+        </label>
+
+        <!-- Campo dinâmico de troco -->
+        <div id="div_troco" class="hidden">
+            <label>Troco para quanto? (Deixe vazio se não precisar):
+                <input type="number" name="troco_para" step="0.01" placeholder="Ex: 100.00">
+            </label>
+        </div>
+
+        <!-- Feedback de valor final -->
+        <div class="total-box">
+            <h4>Total Calculado: R$ <span id="total_exibicao">0.00</span></h4>
+        </div>
+        
+        <input type="hidden" name="valor_total_calculado" id="valor_total_calculado" value="0.00">
+
+        <!-- Botão com logo do WhatsApp -->
+        <button type="submit" class="btn-wpp">
+            <svg viewBox="0 0 24 24">
+                <path d="M12.04 2c-5.46 0-9.9 4.44-9.9 9.9 0 1.75.46 3.45 1.32 4.95L2 22l5.35-1.4c1.43.78 3.05 1.2 4.69 1.2 5.46 0 9.9-4.44 9.9-9.9 0-2.65-1.03-5.14-2.9-7.01C17.18 3.03 14.69 2 12.04 2zM12.04 20.1c-1.43 0-2.83-.38-4.06-1.09l-.29-.17-3.03.79.81-2.95-.19-.31C4.63 15.11 4.14 13.58 4.14 12c0-4.36 3.55-7.9 7.9-7.9 2.11 0 4.1.82 5.6 2.32 1.5 1.5 2.32 3.49 2.32 5.6 0 4.36-3.55 7.9-7.9 7.9zm4.33-5.91c-.24-.12-1.42-.7-1.64-.78-.22-.08-.38-.12-.54.12-.16.24-.62.78-.76.94-.14.16-.28.18-.52.06-.24-.12-1.01-.37-1.93-1.19-.71-.63-1.19-1.41-1.33-1.65-.14-.24-.01-.37.1-.49.11-.11.24-.28.36-.42.12-.14.16-.24.24-.4.08-.16.04-.3-.02-.42-.06-.12-.54-1.31-.74-1.8-.2-.48-.4-.42-.54-.43h-.46c-.16 0-.42.06-.64.3-.22.24-.84.82-.84 2s.86 2.34.98 2.5c.12.16 1.69 2.58 4.1 3.62.58.25 1.03.4 1.38.51.58.19 1.11.16 1.53.1.47-.07 1.42-.58 1.62-1.14.2-.56.2-1.04.14-1.14-.06-.1-.22-.16-.46-.28z"/>
+            </svg>
+            Avançar para o WhatsApp
+        </button>
+    </form>
+</div>
+
+<script>
+    // Função para buscar o endereço automaticamente via API do ViaCEP
+    function buscarCEP(cep) {
+        cep = cep.replace(/\D/g, ''); 
+        if (cep.length === 8) {
+            fetch(`https://viacep.com.br/ws/${cep}/json/`)
+                .then(resposta => resposta.json())
+                .then(dados => {
+                    if (!dados.erro) {
+                        document.getElementById('rua').value = dados.logradouro;
+                        document.getElementById('bairro').value = dados.bairro;
+                        document.getElementById('numero').focus(); 
+                    } else {
+                        alert('CEP não encontrado. Por favor, preencha manualmente.');
+                    }
+                })
+                .catch(erro => console.error('Erro ao buscar CEP:', erro));
+        }
+    }
+
+    // Função para formatar números para o padrão brasileiro
+    function formatarMoeda(valor) {
+        return parseFloat(valor).toFixed(2).replace('.', ',');
+    }
+
+    // Função para os botões de + e -
+    function alterarQuantidade(botao, mudanca) {
+        const container = botao.parentElement;
+        const input = container.querySelector('.quantidade-visor');
+        let valorAtual = parseInt(input.value) || 0;
+        let novoValor = valorAtual + mudanca;
+        if (novoValor < 0) novoValor = 0;
+        
+        input.value = novoValor;
+        calcularTotal(); 
+    }
+
+    // Função Principal
+    function validarFormulario(event) {
+        event.preventDefault(); 
+
+        const inputsQuantidade = document.querySelectorAll('.produto-qtd');
+        let produtosSelecionados = [];
+
+        inputsQuantidade.forEach((input) => {
+            if (parseInt(input.value) > 0) produtosSelecionados.push(input);
+        });
+        
+        if (produtosSelecionados.length === 0) {
+            alert('Por favor, adicione pelo menos um produto para fazer a encomenda.');
+            return false;
+        }
+
+        // 1. Dados Básicos
+        const nomeCliente = document.querySelector('input[name="nome_cliente"]').value.trim();
+        const dataInput = document.querySelector('input[name="data_hora_entrega"]').value;
+        const dataObj = new Date(dataInput);
+        const dataFormatada = dataObj.toLocaleDateString('pt-BR') + ' às ' + dataObj.toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'});
+
+        // 2. Lista de Produtos
+        let listaProdutos = '';
+        produtosSelecionados.forEach((input) => {
+            const nomeProduto = input.getAttribute('data-nome');
+            const quantidade = input.value;
+            listaProdutos += `• ${quantidade}x ${nomeProduto}\n`;
+        });
+
+        // 3. Método de Recebimento e Endereço
+        const metodoRecebimento = document.querySelector('input[name="metodo_recebimento"]:checked').value;
+        let recebimentoTexto = metodoRecebimento === 'delivery' ? '*Delivery*' : '*Retirada no Local*';
+        let enderecoTexto = '';
+        
+        if (metodoRecebimento === 'delivery') {
+            const cep = document.getElementById('cep').value;
+            const rua = document.getElementById('rua').value;
+            const numero = document.getElementById('numero').value;
+            const bairro = document.getElementById('bairro').value;
+            const complemento = document.getElementById('complemento').value;
+            
+            enderecoTexto = `• *Endereço:* ${rua}, ${numero}, ${bairro}\n`;
+            if (complemento) enderecoTexto += `• *Complemento:* ${complemento}\n`;
+            if (cep) enderecoTexto += `• *CEP:* ${cep}\n`;
+        }
+
+        const valorTotalNum = parseFloat(document.getElementById('valor_total_calculado').value);
+
+        // 4. Pagamento e Troco
+        const selectPagamento = document.querySelector('select[name="forma_pagamento"]');
+        const formaPagamentoTexto = selectPagamento.options[selectPagamento.selectedIndex].text;
+        let trocoTexto = '';
+        
+        if (selectPagamento.value === 'dinheiro') {
+            const trocoParaVal = document.querySelector('input[name="troco_para"]').value;
+            if (trocoParaVal) {
+                const trocoParaNum = parseFloat(trocoParaVal.replace(',', '.')); 
+                if (trocoParaNum > valorTotalNum) {
+                    const trocoCalculado = (trocoParaNum - valorTotalNum);
+                    trocoTexto = `*TROCO:* R$ ${formatarMoeda(trocoCalculado)}\n`;
+                } else {
+                    trocoTexto = `*TROCO:* Não precisa\n`;
+                }
+            } else {
+                trocoTexto = `*TROCO:* Não precisa\n`;
+            }
+        }
+
+        // 5. Montagem da Mensagem e Envio para a Serverless Function
+        let mensagem = `Olá, meu nome é ${nomeCliente}! Gostaria de fazer uma encomenda.\n\n`;
+        mensagem += `*Data e Horário:* ${dataFormatada}\n\n`;
+        mensagem += `*MEUS PEDIDOS:*\n${listaProdutos}\n`;
+        mensagem += `*RECEBIMENTO:* ${recebimentoTexto}\n`;
+        if (enderecoTexto) mensagem += `${enderecoTexto}`;
+        mensagem += `*PAGAMENTO:* ${formaPagamentoTexto}\n`;
+        if (trocoTexto) mensagem += `${trocoTexto}`;
+        mensagem += `*VALOR TOTAL: R$ ${formatarMoeda(valorTotalNum)}*`;
+
+        // 6. Envio da mensagem
+        const urlServerless = `/api/whatsapp?text=${encodeURIComponent(mensagem)}`;
+        
+        // Verifica se estamos rodando o arquivo localmente (file://)
+        if (window.location.protocol === 'file:') {
+             const ddi = "55";
+             const ddd = "18";
+             const prefixo = "99712";
+             const sufixo = "1149";
+             const numeroWhatsApp = `${ddi}${ddd}${prefixo}${sufixo}`; 
+             const urlLocal = `https://wa.me/${numeroWhatsApp}?text=${encodeURIComponent(mensagem)}`;
+             window.open(urlLocal, '_blank');
+        } else {
+             // Modo Vercel (Produção): Usa a Serverless Function que protege o número
+             window.open(urlServerless, '_blank');
+        }
+    }
+
+    // Funções de Interface
+    function filtrarCategoria(categoria, botao) {
+        document.querySelectorAll('.btn-filtro').forEach(btn => btn.classList.remove('ativo'));
+        botao.classList.add('ativo');
+
+        const grupos = document.querySelectorAll('.categoria-grupo');
+        grupos.forEach(grupo => {
+            if (categoria === 'todos' || grupo.getAttribute('data-categoria') === categoria) {
+                grupo.classList.remove('hidden');
+            } else {
+                grupo.classList.add('hidden');
+            }
+        });
+    }
+
+    function toggleEndereco() {
+        const metodo = document.querySelector('input[name="metodo_recebimento"]:checked').value;
+        const divEndereco = document.getElementById('div_endereco');
+        const camposObrigatorios = ['cep', 'rua', 'numero', 'bairro'];
+        
+        if (metodo === 'delivery') {
+            divEndereco.classList.remove('hidden');
+            camposObrigatorios.forEach(id => document.getElementById(id).required = true);
+        } else {
+            divEndereco.classList.add('hidden');
+            camposObrigatorios.forEach(id => {
+                const elemento = document.getElementById(id);
+                elemento.required = false;
+                elemento.value = '';
+            });
+            document.getElementById('complemento').value = '';
+        }
+        calcularTotal(); 
+    }
+
+    function toggleTroco() {
+        const pagamento = document.querySelector('select[name="forma_pagamento"]').value;
+        const divTroco = document.getElementById('div_troco');
+        if (pagamento === 'dinheiro') {
+            divTroco.classList.remove('hidden');
+            divTroco.querySelector('input').required = true;
+        } else {
+            divTroco.classList.add('hidden');
+            divTroco.querySelector('input').required = false;
+            divTroco.querySelector('input').value = '';
+        }
+    }
+
+    function calcularTotal() {
+        let total = 0;
+        document.querySelectorAll('.produto-qtd').forEach((input) => {
+            const quantidade = parseInt(input.value) || 0;
+            if (quantidade > 0) {
+                const preco = parseFloat(input.getAttribute('data-preco'));
+                total += preco * quantidade;
+            }
+        });
+
+        const metodoRadios = document.querySelector('input[name="metodo_recebimento"]:checked');
+        if (metodoRadios && metodoRadios.value === 'delivery') {
+            total += 7.00;
+        }
+
+        document.getElementById('total_exibicao').textContent = formatarMoeda(total);
+        document.getElementById('valor_total_calculado').value = total.toFixed(2);
+    }
+</script>
+</body>
+</html>
